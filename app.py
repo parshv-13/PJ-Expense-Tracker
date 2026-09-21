@@ -1,6 +1,6 @@
 """
-Personal Expense Analyzer - Streamlit Application
--------------------------------------------------
+PJ Expense Tracker - Streamlit Application
+------------------------------------------
 A portfolio-ready personal finance app built with Streamlit, SQLite, Pandas, and Plotly.
 Visual Theme: Emerald Green, Teal, Off-White, Dark Charcoal, Orange warning, Red alert.
 Strict Rule: ZERO purple, indigo, or blue anywhere.
@@ -42,7 +42,7 @@ from src.reports import export_to_csv, generate_pdf_report
 # 1. Page Configuration & Custom Styling
 # -------------------------------------------------------------
 st.set_page_config(
-    page_title="Personal Expense Analyzer",
+    page_title="PJ Expense Tracker",
     page_icon="🌿",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -187,7 +187,7 @@ st.sidebar.markdown(
             ₹
         </div>
         <div>
-            <div style='font-size:1.05rem; font-weight:700; color:#111827;'>Expense Analyzer</div>
+            <div style='font-size:1.05rem; font-weight:700; color:#111827;'>PJ Expense Tracker</div>
             <div style='font-size:0.75rem; color:#6B7280;'>Personal Finance Assistant</div>
         </div>
     </div>

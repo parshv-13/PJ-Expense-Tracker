@@ -37,7 +37,7 @@ class ExpensePDFReport(FPDF):
         self.rect(0, 0, 210, 20, "F")
         self.set_font("Helvetica", "B", 13)
         self.set_text_color(255, 255, 255)
-        self.cell(0, 10, "PERSONAL EXPENSE ANALYZER - SUMMARY REPORT", align="C", ln=True)
+        self.cell(0, 10, "PJ EXPENSE TRACKER - SUMMARY REPORT", align="C", ln=True)
         self.ln(12)
 
     def footer(self):

@@ -1,13 +1,12 @@
-# 🌿 Personal Expense Analyzer
+# 🌿 PJ Expense Tracker
 
-A beginner-friendly yet feature-packed **Personal Expense Analyzer** built with **Python**, **Streamlit**, **Pandas**, **Plotly**, and **SQLite**.
+A beginner-friendly yet feature-packed **PJ Expense Tracker** built with **Python**, **Streamlit**, **Pandas**, **Plotly**, and **SQLite**.
 
 Designed to track, categorize, and analyze daily spending habits with smart automated insights, recurring expense detection, and budget limit notifications.
 
 ![Python](https://img.shields.io/badge/Python-3.9+-0D9488?style=flat&logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.30+-10B981?style=flat&logo=streamlit&logoColor=white)
 ![SQLite](https://img.shields.io/badge/Database-SQLite-374151?style=flat&logo=sqlite&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-059669?style=flat)
 
 ---
 
@@ -37,7 +36,6 @@ expense-analyzer/
 ├── requirements.txt            # Project dependencies
 ├── README.md                   # Project documentation
 ├── .gitignore                  # Git ignore definitions
-├── LICENSE                     # MIT Open-Source License
 │
 ├── src/                        # Core application modules
 │   ├── database.py             # SQLite schema creation & CRUD operations
@@ -141,9 +139,3 @@ All tests verify calculations, budget alerts, categorization rules, recurring pa
 - [ ] Split expenses / shared household ledger
 - [ ] Export directly to Excel (`.xlsx`) format with built-in formulas
 - [ ] Machine learning categorization model for ambiguous merchant names
-
----
-
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE).

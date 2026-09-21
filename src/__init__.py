@@ -1,1 +1,1 @@
-"""Personal Expense Analyzer Core Package"""
+"""PJ Expense Tracker Core Package"""
