@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Personal Expense Analyzer & Budget Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Chart.js for interactive analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --primary: #10B981;
+      --primary-hover: #059669;
+      --teal-accent: #0D9488;
+      --dark-charcoal: #111827;
+      --card-bg: #1F2937;
+      --card-border: #374151;
+      --text-main: #F9FAFB;
+      --text-muted: #9CA3AF;
+      --warning: #F59E0B;
+      --alert: #EF4444;
+      --surface: #171F2C;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background-color: var(--dark-charcoal);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: rgba(17, 24, 39, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #10B981, #0D9488);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+
+    .brand h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand span {
+      color: var(--primary);
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 0.55rem 1.1rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #064E3B;
+      font-weight: 700;
+    }
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      color: #FFFFFF;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--card-border);
+      color: var(--text-main);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--primary);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: #FCA5A5;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    .btn-danger:hover {
+      background: var(--alert);
+      color: #FFFFFF;
+    }
+
+    main {
+      flex: 1;
+      padding: 1.75rem 2rem;
+      max-width: 1440px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    /* KPI Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .kpi-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--primary);
+    }
+
+    .kpi-card.warning::before { background: var(--warning); }
+    .kpi-card.alert::before { background: var(--alert); }
+    .kpi-card.teal::before { background: var(--teal-accent); }
+
+    .kpi-title {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+
+    .kpi-val {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: baseline;
+      gap: 0.25rem;
+    }
+
+    .kpi-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+    }
+
+    /* Layout Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 1024px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 0.85rem;
+    }
+
+    .panel-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Forms */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1.2fr 2fr 1.2fr auto;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    input, select {
+      background: #111827;
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 0.65rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+      width: 100%;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+    }
+
+    /* Transactions Table */
+    .table-container {
+      overflow-x: auto;
+      max-height: 420px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background: #16202e;
+      color: var(--text-muted);
+      font-weight: 600;
+      padding: 0.75rem 1rem;
+      position: sticky;
+      top: 0;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid rgba(55, 65, 81, 0.5);
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-cat {
+      background: rgba(16, 185, 129, 0.15);
+      color: #6EE7B7;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-warning {
+      background: rgba(245, 158, 11, 0.15);
+      color: #FCD34D;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .badge-alert {
+      background: rgba(239, 68, 68, 0.15);
+      color: #FCA5A5;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    /* Budgets Progress */
+    .budget-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .budget-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+    }
+
+    .progress-bar-bg {
+      background: #111827;
+      height: 8px;
+      border-radius: 9999px;
+      overflow: hidden;
+      border: 1px solid #374151;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 9999px;
+      transition: width 0.3s ease;
+    }
+
+    /* Anomaly Banner */
+    .anomaly-card {
+      background: rgba(245, 158, 11, 0.08);
+      border-left: 4px solid var(--warning);
+      padding: 0.85rem 1.1rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .anomaly-title {
+      font-weight: 600;
+      color: #FCD34D;
+      font-size: 0.9rem;
+    }
+
+    .anomaly-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Chart wrappers */
+    .chart-box {
+      height: 260px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 2.5rem;
+      color: var(--text-muted);
+    }
+
+    .action-btn-sm {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 1rem;
+      transition: color 0.15s;
+    }
+    .action-btn-sm:hover {
+      color: var(--alert);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">🌿</div>
+      <div>
+        <h1>Personal Expense <span>Analyzer</span></h1>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="btn btn-secondary" id="loadSampleBtn" title="Load sample dataset">
+        📦 Load Sample Data
+      </button>
+      <button class="btn btn-secondary" id="exportCsvBtn" title="Export transactions to CSV">
+        📥 Export CSV
+      </button>
+      <button class="btn btn-danger" id="clearAllBtn" title="Reset all data">
+        🗑️ Clear Data
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-title">Total Spending</div>
+        <div class="kpi-val" id="kpiTotal">₹0.00</div>
+        <div class="kpi-sub" id="kpiCount">0 Transactions recorded</div>
+      </div>
+      <div class="kpi-card teal">
+        <div class="kpi-title">Daily Average</div>
+        <div class="kpi-val" id="kpiDailyAvg">₹0.00</div>
+        <div class="kpi-sub">Across active dates</div>
+      </div>
+      <div class="kpi-card warning">
+        <div class="kpi-title">Top Category</div>
+        <div class="kpi-val" id="kpiTopCat" style="font-size: 1.35rem;">None</div>
+        <div class="kpi-sub" id="kpiTopCatAmount">₹0.00 spent</div>
+      </div>
+      <div class="kpi-card alert">
+        <div class="kpi-title">Unusual Expenses Flagged</div>
+        <div class="kpi-val" id="kpiAnomalyCount">0</div>
+        <div class="kpi-sub" id="kpiAnomalySub">Threshold: > 2.0x category avg</div>
+      </div>
+    </div>
+
+    <!-- Quick Add Form -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title">➕ Quick Add Transaction</h2>
+      </div>
+      <form id="addTxForm" class="form-row">
+        <input type="date" id="txDate" required />
+        <input type="text" id="txDesc" placeholder="Description (e.g. Swiggy Lunch, Uber cab, Metro...)" required />
+        <input type="number" id="txAmount" placeholder="Amount (₹)" min="0.01" step="0.01" required />
+        <button type="submit" class="btn btn-primary">Add Expense</button>
+      </form>
+    </div>
+
+    <!-- Analytics & Budgets Grid -->
+    <div class="dashboard-grid">
+      
+      <!-- Left Column: Charts and Table -->
+      <div style="display:flex; flex-direction:column; gap:1.5rem;">
+        
+        <!-- Charts row -->
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem;">
+          <div class="panel">
+            <div class="panel-header">
+              <h3 class="panel-title">📊 Spending by Category</h3>
+            </div>
+            <div class="chart-box">
+              <canvas id="categoryChart"></canvas>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h3 class="panel-title">📈 Daily Spending Trend</h3>
+            </div>
+            <div class="chart-box">
+              <canvas id="dailyChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transactions Table -->
+        <div class="panel">
+          <div class="panel-header">
+            <h3 class="panel-title">📝 Recent Transactions</h3>
+            <span style="font-size:0.85rem; color:var(--text-muted);" id="tableCountLabel">0 records</span>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th style="text-align:right;">Amount (₹)</th>
+                  <th style="text-align:center;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="txTableBody">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Budgets & Anomalies -->
+      <div style="display:flex; flex-direction:column; gap:1.5rem;">
+        
+        <!-- Unusual Spending / Anomalies -->
+        <div class="panel">
+          <div class="panel-header">
+            <h3 class="panel-title">🚨 Unusual Spending Alerts</h3>
+          </div>
+          <div id="anomalyList">
+            <div class="empty-state">No anomalies detected. Spending is regular!</div>
+          </div>
+        </div>
+
+        <!-- Budget Status -->
+        <div class="panel">
+          <div class="panel-header">
+            <h3 class="panel-title">🎯 Monthly Budget Tracker</h3>
+          </div>
+          <div id="budgetList">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // Keyword rules matching categorizer.py
+    const KEYWORD_RULES = {
+      "Food": ["swiggy", "zomato", "restaurant", "cafe", "coffee", "starbucks", "mcdonald", "burger", "pizza", "domino", "kfc", "dine", "bistro", "subway", "tea", "chai", "lunch", "dinner", "breakfast", "eats"],
+      "Groceries": ["blinkit", "zepto", "instamart", "bigbasket", "supermarket", "grocery", "mart", "dmart", "spencer", "nature's basket", "vegetable", "fruits", "dairy", "milk"],
+      "Transport": ["uber", "ola", "rapido", "metro", "fuel", "petrol", "diesel", "gas station", "shell", "hpcl", "bpcl", "toll", "fastag", "parking", "railway", "irctc", "flight", "indigo", "air india", "train", "bus"],
+      "Shopping": ["amazon", "flipkart", "myntra", "zara", "h&m", "nike", "adidas", "ikea", "uniqlo", "mall", "clothing", "apparel", "electronics", "croma", "reliance digital"],
+      "Entertainment": ["netflix", "spotify", "prime", "disney", "hotstar", "youtube", "cinema", "pvr", "inox", "bookmyshow", "playstation", "xbox", "game", "steam", "concert"],
+      "Utilities": ["electricity", "power", "water", "wifi", "broadband", "internet", "airtel", "jio", "vi", "recharge", "mobile bill", "gas bill", "maintenance", "rent"],
+      "Healthcare": ["pharmacy", "apollo", "medplus", "hospital", "clinic", "doctor", "dental", "lab", "diagnostic", "1mg", "pharmeasy", "medicine"],
+      "Education": ["coursera", "udemy", "book", "tuition", "school", "college", "course", "exam", "stationary", "kindle"],
+      "Personal Care": ["salon", "spa", "haircut", "gym", "fitness", "cult", "barber"],
+      "Investment & Savings": ["zerodha", "groww", "mutual fund", "sip", "stocks", "deposit", "gold"]
+    };
+
+    // Default monthly budgets
+    const DEFAULT_BUDGETS = {
+      "Food": 8000,
+      "Groceries": 7000,
+      "Transport": 4500,
+      "Shopping": 6000,
+      "Entertainment": 2500,
+      "Utilities": 5000,
+      "Healthcare": 3000
+    };
+
+    // Sample data matching sample_transactions.csv
+    const SAMPLE_TRANSACTIONS = [
+      { id: "1", date: "2026-02-02", description: "Swiggy Lunch Box", amount: 360, category: "Food" },
+      { id: "2", date: "2026-02-03", description: "Uber ride to office", amount: 290, category: "Transport" },
+      { id: "3", date: "2026-02-04", description: "Blinkit Household Needs", amount: 580, category: "Groceries" },
+      { id: "4", date: "2026-02-05", description: "Netflix Monthly Subscription", amount: 649, category: "Entertainment" },
+      { id: "5", date: "2026-02-06", description: "Airtel Broadband Fiber Bill", amount: 999, category: "Utilities" },
+      { id: "6", date: "2026-02-07", description: "McDonalds Burger Meal", amount: 420, category: "Food" },
+      { id: "7", date: "2026-02-09", description: "Cult.fit Gym Membership", amount: 2500, category: "Personal Care" },
+      { id: "8", date: "2026-02-10", description: "Apollo Pharmacy Vitamin D", amount: 450, category: "Healthcare" },
+      { id: "9", date: "2026-02-12", description: "Zara Luxury Jacket", amount: 8900, category: "Shopping" },
+      { id: "10", date: "2026-02-13", description: "Zepto Groceries", amount: 510, category: "Groceries" },
+      { id: "11", date: "2026-02-14", description: "Fine Dining Valentine Dinner", amount: 4200, category: "Food" },
+      { id: "12", date: "2026-02-15", description: "HPCL Petrol Refill", amount: 1800, category: "Transport" },
+      { id: "13", date: "2026-02-17", description: "Supermarket Staples", amount: 3800, category: "Groceries" },
+      { id: "14", date: "2026-02-19", description: "Electricity Power Bill", amount: 2450, category: "Utilities" },
+      { id: "15", date: "2026-02-21", description: "BookMyShow Movie Tickets", amount: 780, category: "Entertainment" },
+      { id: "16", date: "2026-02-24", description: "Amazon Electronics Monitor", amount: 12500, category: "Shopping" }
+    ];
+
+    function categorize(desc) {
+      if (!desc) return "Other";
+      const lower = desc.toLowerCase();
+      for (const [cat, keywords] of Object.entries(KEYWORD_RULES)) {
+        for (const kw of keywords) {
+          if (lower.includes(kw)) return cat;
+        }
+      }
+      return "Other";
+    }
+
+    // State management
+    let transactions = [];
+    try {
+      const stored = localStorage.getItem("expense_transactions");
+      transactions = stored ? JSON.parse(stored) : [...SAMPLE_TRANSACTIONS];
+    } catch(e) {
+      transactions = [...SAMPLE_TRANSACTIONS];
+    }
+
+    let categoryChartInstance = null;
+    let dailyChartInstance = null;
+
+    function saveTransactions() {
+      localStorage.setItem("expense_transactions", JSON.stringify(transactions));
+      render();
+    }
+
+    // Date default to today
+    document.getElementById("txDate").value = new Date().toISOString().split("T")[0];
+
+    // Format currency
+    function fmt(val) {
+      return "₹" + Number(val).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // Compute KPIs
+    function updateKPIs() {
+      const total = transactions.reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
+      document.getElementById("kpiTotal").textContent = fmt(total);
+      document.getElementById("kpiCount").textContent = `${transactions.length} Transactions recorded`;
+
+      // Unique dates
+      const dates = new Set(transactions.map(t => t.date));
+      const dailyAvg = dates.size > 0 ? total / dates.size : 0;
+      document.getElementById("kpiDailyAvg").textContent = fmt(dailyAvg);
+
+      // Top category
+      const catTotals = {};
+      transactions.forEach(t => {
+        catTotals[t.category] = (catTotals[t.category] || 0) + Number(t.amount);
+      });
+      let topCat = "None", maxSpent = 0;
+      for (const [c, amt] of Object.entries(catTotals)) {
+        if (amt > maxSpent) {
+          maxSpent = amt;
+          topCat = c;
+        }
+      }
+      document.getElementById("kpiTopCat").textContent = topCat;
+      document.getElementById("kpiTopCatAmount").textContent = `${fmt(maxSpent)} spent`;
+
+      // Anomalies
+      const anomalies = detectAnomalies();
+      document.getElementById("kpiAnomalyCount").textContent = anomalies.length;
+      renderAnomalies(anomalies);
+    }
+
+    // Anomaly detection logic (transparent mean + 2 * std or 2.5x category average)
+    function detectAnomalies() {
+      const grouped = {};
+      transactions.forEach(tx => {
+        if (!grouped[tx.category]) grouped[tx.category] = [];
+        grouped[tx.category].push(tx);
+      });
+
+      const flagged = [];
+      for (const [cat, items] of Object.entries(grouped)) {
+        if (items.length < 2) continue;
+        const amounts = items.map(i => Number(i.amount));
+        const mean = amounts.reduce((a, b) => a + b, 0) / amounts.length;
+        
+        // Variance / std
+        const variance = amounts.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / amounts.length;
+        const std = Math.sqrt(variance);
+        const threshold = Math.max(mean + (1.8 * std), mean * 2.2);
+
+        items.forEach(tx => {
+          if (tx.amount > threshold && tx.amount >= 1500) {
+            flagged.push({
+              ...tx,
+              avg: mean,
+              ratio: (tx.amount / mean).toFixed(1)
+            });
+          }
+        });
+      }
+      return flagged.sort((a, b) => b.amount - a.amount);
+    }
+
+    function renderAnomalies(anomalies) {
+      const container = document.getElementById("anomalyList");
+      if (anomalies.length === 0) {
+        container.innerHTML = `<div class="empty-state">No anomalies detected. Spending is regular!</div>`;
+        return;
+      }
+      container.innerHTML = anomalies.map(a => `
+        <div class="anomaly-card">
+          <div>
+            <div class="anomaly-title">${a.description} (${fmt(a.amount)})</div>
+            <div class="anomaly-desc">${a.ratio}x higher than your average ${a.category} expense (${fmt(a.avg)})</div>
+          </div>
+          <span class="badge badge-warning">${a.category}</span>
+        </div>
+      `).join("");
+    }
+
+    // Render Budgets
+    function renderBudgets() {
+      const container = document.getElementById("budgetList");
+      const catTotals = {};
+      transactions.forEach(t => {
+        catTotals[t.category] = (catTotals[t.category] || 0) + Number(t.amount);
+      });
+
+      let html = "";
+      for (const [cat, limit] of Object.entries(DEFAULT_BUDGETS)) {
+        const spent = catTotals[cat] || 0;
+        const pct = Math.min(Math.round((spent / limit) * 100), 100);
+        let color = "var(--primary)";
+        let badgeClass = "badge-cat";
+        let statusText = "Healthy";
+
+        if (spent > limit) {
+          color = "var(--alert)";
+          badgeClass = "badge-alert";
+          statusText = "Exceeded";
+        } else if (pct >= 80) {
+          color = "var(--warning)";
+          badgeClass = "badge-warning";
+          statusText = "Warning";
+        }
+
+        html += `
+          <div class="budget-item">
+            <div class="budget-info">
+              <span style="font-weight:600;">${cat} <span class="badge ${badgeClass}">${statusText}</span></span>
+              <span>${fmt(spent)} / ${fmt(limit)} (${pct}%)</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" style="width: ${pct}%; background: ${color};"></div>
+            </div>
+          </div>
+        `;
+      }
+      container.innerHTML = html;
+    }
+
+    // Render Table
+    function renderTable() {
+      const tbody = document.getElementById("txTableBody");
+      document.getElementById("tableCountLabel").textContent = `${transactions.length} records`;
+
+      if (transactions.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="empty-state">No transactions yet. Add one above!</td></tr>`;
+        return;
+      }
+
+      const sorted = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+      tbody.innerHTML = sorted.map(tx => `
+        <tr>
+          <td style="color:var(--text-muted); font-size:0.85rem;">${tx.date}</td>
+          <td style="font-weight:600;">${tx.description}</td>
+          <td><span class="badge badge-cat">${tx.category}</span></td>
+          <td style="text-align:right; font-weight:700; color:var(--primary);">${fmt(tx.amount)}</td>
+          <td style="text-align:center;">
+            <button class="action-btn-sm" onclick="deleteTx('${tx.id}')" title="Delete transaction">✕</button>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    // Render Charts
+    function renderCharts() {
+      // Category Breakdown
+      const catTotals = {};
+      transactions.forEach(t => {
+        catTotals[t.category] = (catTotals[t.category] || 0) + Number(t.amount);
+      });
+
+      const catLabels = Object.keys(catTotals);
+      const catValues = Object.values(catTotals);
+
+      if (categoryChartInstance) categoryChartInstance.destroy();
+      const ctxCat = document.getElementById("categoryChart").getContext("2d");
+      categoryChartInstance = new Chart(ctxCat, {
+        type: "doughnut",
+        data: {
+          labels: catLabels,
+          datasets: [{
+            data: catValues,
+            backgroundColor: [
+              "#10B981", "#0D9488", "#059669", "#34D399",
+              "#6EE7B7", "#14B8A6", "#F59E0B", "#EF4444", "#9CA3AF"
+            ],
+            borderWidth: 2,
+            borderColor: "#1F2937"
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: "right", labels: { color: "#9CA3AF", boxWidth: 12 } }
+          }
+        }
+      });
+
+      // Daily Spending Trend
+      const dailyMap = {};
+      transactions.forEach(t => {
+        dailyMap[t.date] = (dailyMap[t.date] || 0) + Number(t.amount);
+      });
+
+      const sortedDates = Object.keys(dailyMap).sort();
+      const dailyValues = sortedDates.map(d => dailyMap[d]);
+
+      if (dailyChartInstance) dailyChartInstance.destroy();
+      const ctxDaily = document.getElementById("dailyChart").getContext("2d");
+      dailyChartInstance = new Chart(ctxDaily, {
+        type: "line",
+        data: {
+          labels: sortedDates.map(d => d.slice(5)), // MM-DD
+          datasets: [{
+            label: "Spending (₹)",
+            data: dailyValues,
+            borderColor: "#10B981",
+            backgroundColor: "rgba(16, 185, 129, 0.15)",
+            borderWidth: 2.5,
+            fill: true,
+            tension: 0.35,
+            pointBackgroundColor: "#0D9488"
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { grid: { color: "#374151" }, ticks: { color: "#9CA3AF" } },
+            y: { grid: { color: "#374151" }, ticks: { color: "#9CA3AF" } }
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+    }
+
+    function render() {
+      updateKPIs();
+      renderBudgets();
+      renderTable();
+      renderCharts();
+    }
+
+    // Delete single tx
+    window.deleteTx = function(id) {
+      transactions = transactions.filter(t => t.id !== id);
+      saveTransactions();
+    };
+
+    // Add form submit
+    document.getElementById("addTxForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const date = document.getElementById("txDate").value;
+      const desc = document.getElementById("txDesc").value.trim();
+      const amount = parseFloat(document.getElementById("txAmount").value);
+
+      if (!desc || isNaN(amount) || amount <= 0) return;
+
+      const newTx = {
+        id: Date.now().toString(),
+        date,
+        description: desc,
+        amount,
+        category: categorize(desc)
+      };
+
+      transactions.push(newTx);
+      saveTransactions();
+
+      document.getElementById("txDesc").value = "";
+      document.getElementById("txAmount").value = "";
+    });
+
+    // Top actions
+    document.getElementById("loadSampleBtn").addEventListener("click", () => {
+      transactions = [...SAMPLE_TRANSACTIONS];
+      saveTransactions();
+    });
+
+    document.getElementById("clearAllBtn").addEventListener("click", () => {
+      if (confirm("Are you sure you want to clear all transactions?")) {
+        transactions = [];
+        saveTransactions();
+      }
+    });
+
+    document.getElementById("exportCsvBtn").addEventListener("click", () => {
+      if (transactions.length === 0) {
+        alert("No transactions to export!");
+        return;
+      }
+      let csvContent = "data:text/csv;charset=utf-8,date,description,category,amount\n";
+      transactions.forEach(t => {
+        csvContent += `"${t.date}","${t.description.replace(/"/g, '""')}","${t.category}",${t.amount}\n`;
+      });
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `expenses_export_${new Date().toISOString().split("T")[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+
+    // Initial load
+    render();
+  </script>
+</body>
+</html>
