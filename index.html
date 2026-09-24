@@ -23,6 +23,33 @@
       --alert: #EF4444;
       --surface: #171F2C;
       --radius: 12px;
+      --input-bg: #111827;
+      --th-bg: #16202e;
+      --border-subtle: rgba(55, 65, 81, 0.5);
+      --table-hover: rgba(255, 255, 255, 0.02);
+      --header-bg: rgba(17, 24, 39, 0.95);
+      --chart-border: #1F2937;
+      --chart-grid: #374151;
+      --chart-tick: #9CA3AF;
+      --bar-track: #111827;
+    }
+
+    [data-theme="light"] {
+      --dark-charcoal: #F3F4F6;
+      --card-bg: #FFFFFF;
+      --card-border: #E5E7EB;
+      --text-main: #111827;
+      --text-muted: #6B7280;
+      --surface: #F9FAFB;
+      --input-bg: #F9FAFB;
+      --th-bg: #F3F4F6;
+      --border-subtle: #E5E7EB;
+      --table-hover: rgba(16, 185, 129, 0.04);
+      --header-bg: rgba(255, 255, 255, 0.95);
+      --chart-border: #FFFFFF;
+      --chart-grid: #E5E7EB;
+      --chart-tick: #6B7280;
+      --bar-track: #E5E7EB;
     }
 
     * {
@@ -30,6 +57,7 @@
       margin: 0;
       padding: 0;
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
     }
 
     body {
@@ -41,7 +69,7 @@
     }
 
     header {
-      background: rgba(17, 24, 39, 0.95);
+      background: var(--header-bg);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--card-border);
       position: sticky;
@@ -82,12 +110,13 @@
 
     .top-actions {
       display: flex;
-      gap: 0.75rem;
+      gap: 0.65rem;
       align-items: center;
+      flex-wrap: wrap;
     }
 
     .btn {
-      padding: 0.55rem 1.1rem;
+      padding: 0.55rem 1rem;
       border-radius: 8px;
       font-size: 0.875rem;
       font-weight: 600;
@@ -111,13 +140,23 @@
     }
 
     .btn-secondary {
-      background: rgba(255, 255, 255, 0.05);
+      background: var(--surface);
       border-color: var(--card-border);
       color: var(--text-main);
     }
     .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.1);
       border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-upload {
+      background: rgba(13, 148, 136, 0.15);
+      border-color: rgba(13, 148, 136, 0.4);
+      color: #14B8A6;
+    }
+    .btn-upload:hover {
+      background: var(--teal-accent);
+      color: #FFFFFF;
     }
 
     .btn-danger {
@@ -128,6 +167,25 @@
     .btn-danger:hover {
       background: var(--alert);
       color: #FFFFFF;
+    }
+
+    .theme-toggle-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      font-size: 1.15rem;
+      cursor: pointer;
+      background: var(--surface);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+    }
+    .theme-toggle-btn:hover {
+      border-color: var(--primary);
+      transform: scale(1.05);
     }
 
     main {
@@ -248,7 +306,7 @@
     }
 
     input, select {
-      background: #111827;
+      background: var(--input-bg);
       border: 1px solid var(--card-border);
       color: var(--text-main);
       padding: 0.65rem 0.85rem;
@@ -276,7 +334,7 @@
     }
 
     th {
-      background: #16202e;
+      background: var(--th-bg);
       color: var(--text-muted);
       font-weight: 600;
       padding: 0.75rem 1rem;
@@ -287,11 +345,11 @@
 
     td {
       padding: 0.75rem 1rem;
-      border-bottom: 1px solid rgba(55, 65, 81, 0.5);
+      border-bottom: 1px solid var(--border-subtle);
     }
 
     tr:hover td {
-      background: rgba(255, 255, 255, 0.02);
+      background: var(--table-hover);
     }
 
     .badge {
@@ -304,20 +362,29 @@
 
     .badge-cat {
       background: rgba(16, 185, 129, 0.15);
-      color: #6EE7B7;
+      color: #059669;
       border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    [data-theme="dark"] .badge-cat {
+      color: #6EE7B7;
     }
 
     .badge-warning {
       background: rgba(245, 158, 11, 0.15);
-      color: #FCD34D;
+      color: #D97706;
       border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    [data-theme="dark"] .badge-warning {
+      color: #FCD34D;
     }
 
     .badge-alert {
       background: rgba(239, 68, 68, 0.15);
-      color: #FCA5A5;
+      color: #DC2626;
       border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    [data-theme="dark"] .badge-alert {
+      color: #FCA5A5;
     }
 
     /* Budgets Progress */
@@ -335,11 +402,11 @@
     }
 
     .progress-bar-bg {
-      background: #111827;
+      background: var(--bar-track);
       height: 8px;
       border-radius: 9999px;
       overflow: hidden;
-      border: 1px solid #374151;
+      border: 1px solid var(--card-border);
     }
 
     .progress-bar-fill {
@@ -362,8 +429,11 @@
 
     .anomaly-title {
       font-weight: 600;
-      color: #FCD34D;
+      color: #D97706;
       font-size: 0.9rem;
+    }
+    [data-theme="dark"] .anomaly-title {
+      color: #FCD34D;
     }
 
     .anomaly-desc {
@@ -397,6 +467,55 @@
     .action-btn-sm:hover {
       color: var(--alert);
     }
+
+    /* Theme toggle */
+    .theme-toggle {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      border-radius: 20px;
+      padding: 0.35rem 0.85rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .theme-toggle:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* CSV import toast */
+    #csvToast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-left: 4px solid var(--primary);
+      color: var(--text-main);
+      padding: 14px 20px;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none;
+      z-index: 9999;
+      max-width: 340px;
+    }
+    #csvToast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    #csvToast.error {
+      border-left-color: var(--alert);
+    }
   </style>
 </head>
 <body>
@@ -413,13 +532,22 @@
       <button class="btn btn-secondary" id="loadSampleBtn" title="Load sample dataset">
         📦 Load Sample Data
       </button>
+      <button class="btn btn-secondary" id="importCsvBtn" title="Import transactions from CSV file">
+        📂 Import CSV
+      </button>
       <button class="btn btn-secondary" id="exportCsvBtn" title="Export transactions to CSV">
         📥 Export CSV
       </button>
       <button class="btn btn-danger" id="clearAllBtn" title="Reset all data">
         🗑️ Clear Data
       </button>
+      <button class="theme-toggle" id="themeToggleBtn" title="Toggle light / dark mode">
+        <span id="themeIcon">☀️</span>
+        <span id="themeLabel">Light</span>
+      </button>
     </div>
+    <!-- Hidden file input for CSV import -->
+    <input type="file" id="csvFileInput" accept=".csv,text/csv" style="display:none" />
   </header>
 
   <main>
@@ -793,14 +921,14 @@
               "#6EE7B7", "#14B8A6", "#F59E0B", "#EF4444", "#9CA3AF"
             ],
             borderWidth: 2,
-            borderColor: "#1F2937"
+            borderColor: getComputedStyle(document.documentElement).getPropertyValue('--chart-border').trim() || '#1F2937'
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: { position: "right", labels: { color: "#9CA3AF", boxWidth: 12 } }
+            legend: { position: "right", labels: { color: getComputedStyle(document.documentElement).getPropertyValue('--chart-tick').trim() || '#9CA3AF', boxWidth: 12 } }
           }
         }
       });
@@ -835,8 +963,8 @@
           responsive: true,
           maintainAspectRatio: false,
           scales: {
-            x: { grid: { color: "#374151" }, ticks: { color: "#9CA3AF" } },
-            y: { grid: { color: "#374151" }, ticks: { color: "#9CA3AF" } }
+            x: { grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--chart-grid').trim() || '#374151' }, ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--chart-tick').trim() || '#9CA3AF' } },
+            y: { grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--chart-grid').trim() || '#374151' }, ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--chart-tick').trim() || '#9CA3AF' } }
           },
           plugins: {
             legend: { display: false }
@@ -913,8 +1041,159 @@
       document.body.removeChild(link);
     });
 
-    // Initial load
+    // ── Theme Toggle ─────────────────────────────────────────────
+    (function initTheme() {
+      const saved = localStorage.getItem('pj-theme') || 'dark';
+      applyTheme(saved);
+    })();
+
+    function applyTheme(theme) {
+      if (theme === 'light') {
+        document.body.setAttribute('data-theme', 'light');
+        document.getElementById('themeIcon').textContent = '🌙';
+        document.getElementById('themeLabel').textContent = 'Dark';
+      } else {
+        document.body.removeAttribute('data-theme');
+        document.getElementById('themeIcon').textContent = '☀️';
+        document.getElementById('themeLabel').textContent = 'Light';
+      }
+      localStorage.setItem('pj-theme', theme);
+      // Re-render charts so their colors update
+      renderCharts();
+    }
+
+    document.getElementById('themeToggleBtn').addEventListener('click', () => {
+      const current = localStorage.getItem('pj-theme') || 'dark';
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    });
+
+    // ── CSV Import ───────────────────────────────────────────────
+    function showToast(msg, isError = false) {
+      const toast = document.getElementById('csvToast');
+      toast.textContent = msg;
+      toast.classList.toggle('error', isError);
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    // Map raw CSV headers to internal field names (case-insensitive, flexible)
+    function detectColumns(headers) {
+      const h = headers.map(x => x.trim().toLowerCase());
+      const find = (...aliases) => {
+        for (const a of aliases) {
+          const idx = h.findIndex(x => x.includes(a));
+          if (idx !== -1) return idx;
+        }
+        return -1;
+      };
+      return {
+        dateIdx:   find('date'),
+        descIdx:   find('desc', 'narration', 'particulars', 'detail', 'note', 'memo', 'transaction'),
+        amtIdx:    find('amount', 'debit', 'spent', 'cost', 'price', 'withdrawal'),
+        catIdx:    find('categ', 'type', 'group', 'label'),
+      };
+    }
+
+    function parseCSV(text) {
+      // Split into lines, handle \r\n and \r
+      const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').filter(l => l.trim());
+      if (lines.length < 2) return [];
+
+      // Parse a CSV line respecting quoted fields
+      function parseLine(line) {
+        const result = [];
+        let cur = '', inQuote = false;
+        for (let i = 0; i < line.length; i++) {
+          const ch = line[i];
+          if (ch === '"') {
+            if (inQuote && line[i+1] === '"') { cur += '"'; i++; }
+            else inQuote = !inQuote;
+          } else if (ch === ',' && !inQuote) {
+            result.push(cur.trim()); cur = '';
+          } else cur += ch;
+        }
+        result.push(cur.trim());
+        return result;
+      }
+
+      const headers = parseLine(lines[0]);
+      const { dateIdx, descIdx, amtIdx, catIdx } = detectColumns(headers);
+
+      if (dateIdx === -1 || descIdx === -1 || amtIdx === -1) {
+        showToast('❌ CSV must have columns for date, description, and amount.', true);
+        return [];
+      }
+
+      const imported = [];
+      for (let i = 1; i < lines.length; i++) {
+        const cols = parseLine(lines[i]);
+        const rawDate  = (cols[dateIdx]  || '').replace(/"/g, '').trim();
+        const rawDesc  = (cols[descIdx]  || '').replace(/"/g, '').trim();
+        const rawAmt   = (cols[amtIdx]   || '').replace(/"/g, '').replace(/[^0-9.-]/g, '').trim();
+        const rawCat   = catIdx !== -1 ? (cols[catIdx] || '').replace(/"/g, '').trim() : '';
+
+        if (!rawDate || !rawDesc || !rawAmt) continue;
+
+        // Normalise date to YYYY-MM-DD
+        let parsedDate = rawDate;
+        // Try dd/mm/yyyy or dd-mm-yyyy
+        const dmy = rawDate.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
+        if (dmy) parsedDate = `${dmy[3]}-${dmy[2].padStart(2,'0')}-${dmy[1].padStart(2,'0')}`;
+        // Try mm/dd/yyyy
+        const mdy = rawDate.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
+        if (mdy && !dmy) parsedDate = `${mdy[3]}-${mdy[1].padStart(2,'0')}-${mdy[2].padStart(2,'0')}`;
+
+        const amount = parseFloat(rawAmt);
+        if (isNaN(amount) || amount <= 0) continue;
+
+        imported.push({
+          id: `csv-${Date.now()}-${i}`,
+          date: parsedDate,
+          description: rawDesc,
+          amount,
+          category: rawCat || categorize(rawDesc)
+        });
+      }
+      return imported;
+    }
+
+    document.getElementById('importCsvBtn').addEventListener('click', () => {
+      document.getElementById('csvFileInput').click();
+    });
+
+    document.getElementById('csvFileInput').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      e.target.value = ''; // Reset so same file can be re-selected
+
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const imported = parseCSV(ev.target.result);
+        if (imported.length === 0) {
+          showToast('⚠️ No valid rows found in the CSV file.', true);
+          return;
+        }
+
+        // Deduplicate: skip rows that match existing date+description+amount
+        const existingKeys = new Set(transactions.map(t => `${t.date}|${t.description}|${t.amount}`));
+        const fresh = imported.filter(t => !existingKeys.has(`${t.date}|${t.description}|${t.amount}`));
+        const dupes = imported.length - fresh.length;
+
+        transactions.push(...fresh);
+        saveTransactions();
+
+        let msg = `✅ Imported ${fresh.length} transaction${fresh.length !== 1 ? 's' : ''} from ${file.name}`;
+        if (dupes > 0) msg += ` (${dupes} duplicate${dupes !== 1 ? 's' : ''} skipped)`;
+        showToast(msg);
+      };
+      reader.readAsText(file);
+    });
+
+    // ── Initial load ─────────────────────────────────────────────
     render();
   </script>
+
+  <!-- CSV import toast notification -->
+  <div id="csvToast"></div>
 </body>
 </html>
