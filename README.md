@@ -130,12 +130,3 @@ All tests verify calculations, budget alerts, categorization rules, recurring pa
 * **Auto-Categorizer (`src/categorizer.py`):** Checks transaction descriptions for matching keywords (like "uber", "swiggy", "netflix") and tags the appropriate category.
 * **Anomaly Detection (`src/anomaly.py`):** Calculates average spending per category and flags any expense that is more than $2\times$ standard deviations above normal.
 * **Recurring Detection (`src/recurring.py`):** Groups recurring merchant descriptions over time to highlight subscriptions and estimated monthly recurring costs.
-
----
-
-## 🔮 Future Improvements
-
-- [ ] Multi-account support (Checking, Credit Card, Savings)
-- [ ] Split expenses / shared household ledger
-- [ ] Export directly to Excel (`.xlsx`) format with built-in formulas
-- [ ] Machine learning categorization model for ambiguous merchant names
